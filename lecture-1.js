@@ -68,11 +68,11 @@ EXTRA: ...in descending index order (starting from the end)
 console.log( "\n** Exercise 4 *****************************\n");
 
 const randomArray = new Array(5).fill().map(() => Math.round((Math.random() * 10) + 1));
-console.log(randomArray);
+console.log('Random array:',randomArray);
 const randomArraySortedAsc = randomArray.sort((a, b) => a - b );
-console.log(randomArraySortedAsc);
+console.log('Array sorted asc.:',randomArraySortedAsc);
 const randomArraySortedADec = randomArray.sort((a, b) => b - a );
-console.log(randomArraySortedADec);
+console.log('Array sorted dec.:',randomArraySortedADec);
 
 /**
  * Exercise 5
@@ -83,15 +83,15 @@ console.log( "\n** Exercise 5 *****************************\n");
 
 const ex5str = "adsf qwerty";
 const ex5strArray = ex5str.split('').map(x => x.charCodeAt(0))
-console.log(ex5strArray);
-console.log(ex5str.split('').sort());
+console.log('ascii codes of the string "adsf qwerty":', ex5strArray);
+console.log('An array of strings in alphabetical order', ex5str.split('').sort());
 
 /**
- * 4. Write a JavaScript program to print information about the book library dataset. Implement the following functions:
+ * Exercise 6. 
+ * Write a JavaScript program to print information about the book library dataset. Implement the following functions:
 
 printBookData(id);
 printReadingStatus(author, title);
-
 addNewBook(author, title);
 saveToJSON();
 loadFromJSON();
@@ -146,19 +146,21 @@ const addNewBook = (author, title) => {
 		author: author,
 		title:  title, 
 		readingStatus: false,
-		id: (library.length + 1),
+		id: (library.length + 1), // probably not professional - use an id generator
 	};
 	library.push(newBookObj); 
 };
 
 addNewBook('Four Author', 'Four title');
-console.log(library);
+console.log('Updated library:',library);
 
 const saveToJSON = (jsonDataset) => {
 	fs.writeFileSync('library.json', JSON.stringify(library), (error) => {
 		if (error) {
 			console.log(error);
+			return;
 		}
+		console.log('Saved to disk.');
 	});
 };
 
