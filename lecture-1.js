@@ -160,8 +160,8 @@ const saveToJSON = (jsonDataset) => {
 			console.log(error);
 			return;
 		}
-		console.log('Saved to disk.');
 	});
+	console.log('Saved to disk');	
 };
 
 saveToJSON(library);
@@ -172,4 +172,4 @@ const loadFromJSON = (library) => {
 	return json;	
 };
 
-console.log(loadFromJSON('library.json'));
+console.log('Loaded from JSON:', loadFromJSON('library.json'));
