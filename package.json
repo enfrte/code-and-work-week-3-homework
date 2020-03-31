@@ -1,0 +1,22 @@
+{
+  "name": "code-and-work-week-3-homework",
+  "version": "1.0.0",
+  "description": "**Deadline: 3.4.2020 9am**",
+  "main": "code-and-work-week-3-homework.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enfrte/code-and-work-week-3-homework.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/enfrte/code-and-work-week-3-homework/issues"
+  },
+  "homepage": "https://github.com/enfrte/code-and-work-week-3-homework#readme",
+  "dependencies": {
+    "readline-sync": "^1.4.10"
+  }
+}
