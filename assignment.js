@@ -92,9 +92,9 @@ A prime number is a number that is divisible only by two numbers: the number its
 
 For example, 6 is not a prime because it is divisible by 6 (the number itself), 3, 2 and 1.
 
-What makes a number divisible by another? Because the result of the division $`6/3 = 2`$ is an integer, 6 is divisible by 3. This alone makes 6 not a prime!
+What makes a number divisible by another? Because the result of the division 6/3 = 2 is an integer, 6 is divisible by 3. This alone makes 6 not a prime!
 
-In contrast, 7 is a prime: it is only divisible by 7 and 1 &mdash; $`7/7`$ and $`7/1`$ are integers.
+In contrast, 7 is a prime: it is only divisible by 7 and 1 -- 7/7 and 7/1 are integers.
 
 So after this lengthy introduction, the task itself is to create a function that checks whether a given number is a prime.
 
@@ -104,3 +104,28 @@ The function should take in a `number` and return a string `[number] is prime` o
 
 console.log("\n### ### A3.3 I swear this is the last maths-heavy exercise --------------------------------\n");
 
+const isPrime = (n) => {
+	const output = (bool) => (bool) ? `${n} is prime` : `${n} is not prime`;
+
+	if (n === 1)
+  {
+    return output(false);
+  }
+  else if (n === 2)
+  {
+    return output(true);
+	} 
+	else {
+    for(let x = 2; x < n; x++)
+    {
+      if(n % x === 0)
+      {
+        return output(false);
+      }
+    }
+    return output(true);  
+  }
+}
+
+console.log( isPrime(6) );
+console.log( isPrime(7) );
