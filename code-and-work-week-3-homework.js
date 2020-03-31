@@ -281,17 +281,16 @@ while(answer !== "quit") {
 	answer = stringLowerCase(answer);
 
 	switch(answer) {
-    case "help":
-    	console.log(helpText);
+		case "help":
+			console.log(helpText);
 			break;
 		case "quit":
-    	console.log("\nGoodbye!\n");
-      break;
-    case "create_account":
-      saveNewAccount(createAccount());
-      break;
-    default:
-      console.log("Error: Input was not found");
-  }
+			console.log("\nGoodbye!\n");
+			break;
+		case "create_account":
+			saveNewAccount(createAccount());
+			break;
+		default:
+			console.log("Error: Input was not found");
+	}
 }
-
