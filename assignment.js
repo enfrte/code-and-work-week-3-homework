@@ -42,10 +42,10 @@ const getHint = (secret, guess) => {
 }
 
 // Test it
-console.log(getHint("HEAT","COIN"));
-console.log(getHint("HEAT","EATS"));
-console.log(getHint("HEAT","TEAL"));
-console.log(getHint("HEAT","HATE"));
+//console.log(getHint("HEAT","COIN"));
+//console.log(getHint("HEAT","EATS"));
+//console.log(getHint("HEAT","TEAL"));
+//console.log(getHint("HEAT","HATE"));
 
 /*
 ### A3.2 Circular airport
@@ -54,16 +54,38 @@ Suppose we have a circular airport with 36 runways that start from the center an
 
 The 36 runways are given numbers determined by their direction, starting from 1 to 36. The runway number is determined by the bearing of the runway (i.e., the direction relative to the control tower) in degrees.
 
-Write a program where the user inputs the bearing as a floating point number ranging from $`0^\circ`$ to $`360^\circ`$ and the program outputs the corresponding runway number.
+Write a program where the user inputs the bearing as a floating point number ranging from 0∘ to 360∘ and the program outputs the corresponding runway number.
 
-
-- for $`360^\circ`$ and $`0-9.99999999^\circ`$, the runway number should be 1,
-- for $`10-19.99999999^\circ`$, the runway number should be 2,
+- for 360∘ and 0-9.99999999∘, the runway number should be 1,
+- for 10-19.99999999∘, the runway number should be 2,
 - and so on...
-- and for $`350-359.99999999^\circ`$, the runway number should be 36.
+- and for 350-359.99999999∘, the runway number should be 36.
 
-*Extra:* What if there are another number of runways &mdash; for example, 20?
+*Extra:* What if there are another number of runways -- for example, 20?
+*/
 
+console.log("\n### A3.2 Circular airport --------------------------------\n");
+
+const getRunwayNumber = (bearing) => {
+	if (bearing === 360) {
+		return 1;	
+	}
+	else {
+		runwayCalc = (bearing / 10) + 1;
+		return Math.floor(runwayCalc);
+	}
+	return 'Error: Runway not found';
+
+}
+
+//console.log('Bearing 360 = Runway',getRunwayNumber(360));
+//console.log('Bearing 9.99999999 = Runway',getRunwayNumber(9.99999999));
+//console.log('Bearing 10 = Runway',getRunwayNumber(10));
+//console.log('Bearing 19.99999999 = Runway',getRunwayNumber(19.99999999));
+//console.log('Bearing 350 = Runway',getRunwayNumber(350));
+//console.log('Bearing 359.99999999 = Runway',getRunwayNumber(359.99999999));
+
+/*
 ### A3.3 I swear this is the last maths-heavy exercise
 
 A prime number is a number that is divisible only by two numbers: the number itself and 1.
@@ -79,4 +101,6 @@ So after this lengthy introduction, the task itself is to create a function that
 The function should take in a `number` and return a string `[number] is prime` or `[number] is not prime`.
 
  */
+
+console.log("\n### ### A3.3 I swear this is the last maths-heavy exercise --------------------------------\n");
 
