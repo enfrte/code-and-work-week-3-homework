@@ -38,19 +38,29 @@ const saveNewAccount = (accountDetails) => {
 
 ### H3.4 Does an account exist
 
-The `does_account_exist` command starts a dialog sequence as well. Find if the account in question is stored in `all_users` array.
+The `does_account_exist` command starts a dialog sequence as well. 
+Find if the account in question is stored in `all_users` array.
 
-    $ Checking if an account exists!
-    $ Enter the account ID whose existence you want to verify.
-    > 69420
-    $ An account with that ID does not exist. Try again.
-    > 2035
-    $ This account exists.
+*/
 
-		*/
+const does_account_exist = () => {
+	// an array of only account ids
+	const allUsersIds = all_users.map( (value) => {
+    return value.id;
+	});
+
+  let inputId = readline.question(`\nChecking if an account exists!\nEnter the account ID whose existence you want to verify.\n`);	
+	let verifyAccount = allUsersIds.includes(parseInt(inputId));
+
+	while (verifyAccount === false) {
+		inputId = readline.question("\nAn account with that ID does not exist. Try again.\n");
+		verifyAccount = allUsersIds.includes(parseInt(inputId));
+
+	}
+  console.log("\nThis account exists.\n");
+}
 		
-		
-		/*
+/*
 ### H3.5 Account balance
 
 The `account_balance` command starts a dialog sequence as well. User is asked for an account ID and a password. Given a correct ID-password pair, the account balance is printed.
@@ -289,7 +299,10 @@ while(answer !== "quit") {
 			break;
 		case "create_account":
 			saveNewAccount(createAccount());
-			break;
+      break;
+    case "does_account_exist":
+      does_account_exist();
+      break;
 		default:
 			console.log("Error: Input was not found");
 	}

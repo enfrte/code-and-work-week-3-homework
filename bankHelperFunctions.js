@@ -46,3 +46,4 @@ Fund requests
 request_funds       Opens a dialog for requesting another user for funds.
 fund_requests       Shows all the fund requests for the given account.
 accept_fund_request Opens a dialog for accepting a fund request.`;
+
