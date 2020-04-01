@@ -34,28 +34,14 @@ const saveNewAccount = (accountDetails) => {
 	console.log(`\nYour account is now created.\nAccount id: ${accountDetails.id}\nStore your account ID in a safe place.`);
 };
 
-/*
-
-### H3.4 Does an account exist
-
-The `does_account_exist` command starts a dialog sequence as well. 
-Find if the account in question is stored in `all_users` array.
-
-*/
-
+// Check if account exists 
 const does_account_exist = () => {
-	// an array of only account ids
-	const allUsersIds = all_users.map( (value) => {
-    return value.id;
-	});
-
   let inputId = readline.question(`\nChecking if an account exists!\nEnter the account ID whose existence you want to verify.\n`);	
-	let verifyAccount = allUsersIds.includes(parseInt(inputId));
+  verifyAccountID(inputId);
 
-	while (verifyAccount === false) {
+	while (verifyAccountID(inputId) === false) {
 		inputId = readline.question("\nAn account with that ID does not exist. Try again.\n");
-		verifyAccount = allUsersIds.includes(parseInt(inputId));
-
+    verifyAccountID(inputId);
 	}
   console.log("\nThis account exists.\n");
 }
@@ -63,22 +49,33 @@ const does_account_exist = () => {
 /*
 ### H3.5 Account balance
 
-The `account_balance` command starts a dialog sequence as well. User is asked for an account ID and a password. Given a correct ID-password pair, the account balance is printed.
+The `account_balance` command starts a dialog sequence as well. 
+User is asked for an account ID and a password. 
+Given a correct ID-password pair, the account balance is printed.
 
-    $ Checking your account balance!
-    $ What is your account ID?
+Checking your account balance!
+What is your account ID?
     > 69420
-    $ An account with that ID does not exist. Try again.
+An account with that ID does not exist. Try again.
     > 2035
-    $ Account found! Insert your password.
+Account found! Insert your password.
     > hunetr12
-    $ Wrong password, try typing it again.
+Wrong password, try typing it again.
     > hunter12.
-    $ Correct password. We validated you as Rene Orosz.
-    $ Your account balance is 12e.
+Correct password. We validated you as Rene Orosz.
+Your account balance is 12e.
+*/
 
-		*/
-		
+const verifyAccountID = (number) => {
+	const allUsersIds = all_users.map( (value) => {
+    return value.id;
+	});
+
+	let verifyAccount = allUsersIds.includes(parseInt(number));
+
+	return (verifyAccount === true) ? true : false;
+}
+    // make func verifyPassword => arguments(accountId) => return true
 		
 		/*
 ### H3.6 Change name
