@@ -23,14 +23,11 @@ console.log( aNew );
 ['bananas','apples', 'oranges']
 */
 
-const fruit = ['bananas','apples', 'oranges', 'bananas'];
-const fruitNew = fruit.filter( (value, index, array) => {
-	// indexOf() searches the array for the specified item, and returns its position.
-	return array.indexOf(value) === index; 
-});
+const fruit = ['bananas', 'apples', 'oranges', 'bananas'];
+const fruitNew = fruit.filter( 
+	(value, index, array) => {
+		// indexOf() searches the array for the specified item, and returns the first instance of its position.
+		return array.indexOf(value) === index; // true if both the index matches the first instance of the value found by indexOf
+	}
+);
 console.log( fruitNew );
-
-/**
- * Ex 3.
- * 
- */
