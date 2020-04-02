@@ -112,7 +112,6 @@ const overwriteUserAccount = (accountNumberString, accountObj) => {
 const getAccountObj = (validateAccountId, validateAccountPassword, accountNumberString) => {
   const accountNumber = parseInt(accountNumberString); // this value comes from text input and is therefore a string
   if ((validateAccountId && validateAccountPassword) === true) {
-    console.log('validated');
     const userAccountObjArray = all_users.filter( (value) => { return value.id === accountNumber } );
     const userAccountObj = userAccountObjArray[0];
     return userAccountObj;
@@ -139,37 +138,36 @@ const askForPassword = (inputId) => {
 		password = readline.question("\nWrong password, try typing it again.\n");
     verifyAccountPassword(inputId, password);
   }
+  console.log("\nCorrect password.\n");
   return password;
 };
+
+const withdraw_funds = () => {
+  console.log(`\nWithdrawing cash!\n`);
+
+  const inputId = askForId();
+  console.log(`\nAccount found!\n`);
+
+  const password = askForPassword(inputId);
+  const accountObj = getAccountObj( verifyAccountID(inputId), verifyAccountPassword(inputId, password), inputId );
+  console.log(`\nWe validated you as ${accountObj.name}\n`);
+  let moneyToWithdraw = readline.question(`How much money do you want to withdraw? (Current balance: ${accountObj.balance}e)`);
+  moneyToWithdraw = parseInt(moneyToWithdraw);
+  while (moneyToWithdraw > accountObj.balance) {
+    moneyToWithdraw = readline.question(`Unfortunately you don't have the balance for that. Try a smaller amount.`);
+    moneyToWithdraw = parseInt(moneyToWithdraw);
+  }
+
+  console.log(`Withdrawing a cash sum of ${moneyToWithdraw}e.`);
+  accountObj.balance = accountObj.balance - moneyToWithdraw;
+
+  overwriteUserAccount(inputId, accountObj);
+  saveToDb(databaseFile, all_users);
+
+  console.log(`Your account balance is now ${accountObj.balance}e.`);
+};
 		
-		/*
-## Funds
-### H3.7 Withdraw funds
-
-The `withdraw_funds` command starts a dialog sequence as well. Reuse elements from H2.5.4 and H2.5.6 for checking if an account exists and logging in.
-
-Withdrawing cash!
-What is your account ID?
-    > 69420
-An account with that ID does not exist. Try again.
-    > 2035
-Account found! Insert your password.
-    > hunetr12
-Wrong password, try typing it again.
-    > hunter12.
-Correct password. We validated you as Rene Orozzz.
-How much money do you want to withdraw? (Current balance: 12e)
-    > 13
-Unfortunately you don't have the balance for that. Try a smaller amount.
-    > 11
-Withdrawing a cash sum of 11e. Your account balance is now 1e.
-
-Find the correct account from the `all_users` array, validate the user and update the account balance. Don't allow the user to exceed their balance in the withdrawal.
-
-*/
-		
-		
-		/*
+/*
 ### H3.8 Deposit funds
 
 The `deposit_funds` command starts a dialog sequence as well, very similarly to `withdraw_funds`.
@@ -352,10 +350,13 @@ while(answer !== "quit") {
     case "change_name":
       change_name();
       break;
+    case "withdraw_funds":
+      withdraw_funds();
+      break;
       
     
 		default:
-      change_name();
+      withdraw_funds();
 			//console.log("Error: Input was not found");
 	}
 }
