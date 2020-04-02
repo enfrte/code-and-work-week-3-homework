@@ -87,21 +87,11 @@ const verifyAccountPassword = (accountNumberString, passwordAttempt) => {
 } 
 
 const change_name = () => {
-  let inputId = readline.question(`\Changing the name associated with your account!\nWhat is your account ID?\n`);
-  verifyAccountID(inputId);
-
-	while (verifyAccountID(inputId) === false) {
-		inputId = readline.question("\nAn account with that ID does not exist. Try again.\n");
-    verifyAccountID(inputId);
-  }
+  console.log(`\nChanging the name associated with your account!\n`);
+  const inputId = askForId();
   
-  let password = readline.question("\nAccount found! Insert your password.\n");
-  verifyAccountPassword(inputId, password);
-
-	while (verifyAccountPassword(inputId, password) === false) {
-		password = readline.question("\nWrong password, try typing it again.\n");
-    verifyAccountPassword(inputId, password);
-  }
+  console.log(`\nAccount found!\n`);
+  const password = askForPassword(inputId);
   
   const accountObj = getAccountObj( verifyAccountID(inputId), verifyAccountPassword(inputId, password), inputId );
   console.log( `\nCorrect password. We validated you as ${accountObj.name}\nBut it appears you want to change your name.\n`);
@@ -109,6 +99,7 @@ const change_name = () => {
   accountObj.name = newName;
   overwriteUserAccount(inputId, accountObj);
   saveToDb(databaseFile, all_users);
+  console.log(`\nWe will address you as ${newName} from now on.\n`);
 };
 
 const overwriteUserAccount = (accountNumberString, accountObj) => {
@@ -117,10 +108,7 @@ const overwriteUserAccount = (accountNumberString, accountObj) => {
   all_users[accountIndex] = accountObj; // overwrites at specified index
 };
 
-/*
-### H3.6 Change name
-We will address you as Rene Orozzz from now on.
-*/
+
 const getAccountObj = (validateAccountId, validateAccountPassword, accountNumberString) => {
   const accountNumber = parseInt(accountNumberString); // this value comes from text input and is therefore a string
   if ((validateAccountId && validateAccountPassword) === true) {
@@ -131,7 +119,28 @@ const getAccountObj = (validateAccountId, validateAccountPassword, accountNumber
   }
   console.log("Error: getAccountObj didn't validate");
 };
-		
+
+const askForId = () => {
+  let inputId = readline.question(`\nWhat is your account ID?\n`);
+  verifyAccountID(inputId);
+
+	while (verifyAccountID(inputId) === false) {
+		inputId = readline.question("\nAn account with that ID does not exist. Try again.\n");
+    verifyAccountID(inputId);
+  }
+  return parseInt(inputId);
+}
+
+const askForPassword = (inputId) => {
+  let password = readline.question("\nInsert your password.\n");
+  verifyAccountPassword(inputId, password);
+
+	while (verifyAccountPassword(inputId, password) === false) {
+		password = readline.question("\nWrong password, try typing it again.\n");
+    verifyAccountPassword(inputId, password);
+  }
+  return password;
+};
 		
 		/*
 ## Funds

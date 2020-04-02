@@ -12,3 +12,5 @@ const arrayIndex = all_users.findIndex(obj => obj.id === 1585668001215);
 */
 const arr = [{id: 1},{id: 2}];
 const newArr = {id: 123};
+arr[0] = newArr;
+arr;
