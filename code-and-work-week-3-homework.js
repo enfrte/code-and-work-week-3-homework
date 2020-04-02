@@ -252,36 +252,71 @@ const request_funds = () => {
 
   console.log(`\nRequested ${moneyToRequest}e from the user with ID ${requesteeAccountId}.\n`);
 };
+    
+//The `request_funds` command lists the fund requests for your account.
+const fund_requests = () => {
+  console.log(`\nListing fund requests!\n`);
+
+  const inputId = askForId();
+  console.log(`\nAccount found!\n`);
+
+  const password = askForPassword(inputId);
+
+  const accountObj = getAccountObj( verifyAccountID(inputId), verifyAccountPassword(inputId, password), inputId );
+  console.log(`\nWe validated you as ${accountObj.name}\n`);
+  console.log(`\nListing all the requests for your account!\n`);
+  accountObj.fund_requests.map( (obj) => console.log( ` - ${obj.requestedAmount}e for the user ${obj.requesterId}`) ); 
+};
+    
+const accept_fund_request = () => {
+  //Accepting fund requests!
+  console.log(`\nAccepting fund request!\n`);
+
+  const inputId = askForId();
+  console.log(`\nAccount found!\n`);
+
+  const password = askForPassword(inputId);
+
+  const accountObj = getAccountObj( verifyAccountID(inputId), verifyAccountPassword(inputId, password), inputId );
+  console.log(`\nWe validated you as ${accountObj.name}\n`);
+  console.log(`\nListing all the requests for your account!\n`);
+  accountObj.fund_requests.map( (obj, index) => console.log( `${index + 1}.\t ${obj.requestedAmount}e for the user ${obj.requesterId}`) ); 
+  let fundRequestOption = readline.question(`\nYour account balance is ${accountObj.balance}e. Which fund request would you like to accept?\n`);
+  fundRequestOption = parseInt(fundRequestOption) - 1;
+  const requestedAmount = accountObj.fund_requests[fundRequestOption].requestedAmount
+  const requesterId = accountObj.fund_requests[fundRequestOption].requesterId;
+  
+  while (requestedAmount > accountObj.balance) {
+    fundRequestOption = readline.question(`\nYou do not have funds to accept this request.\n`);
+    fundRequestOption = parseInt(fundRequestOption) - 1;
+  }
+  // User has funds for transfer. Make transfer.
+  console.log(`\nAccepting fund request ${requestedAmount}e for the user ${requesterId}.\n`);
+  console.log(`\nTransferring ${requestedAmount}e to account ID ${requesterId}.\n`);
+
+  // transfer fund to requester account
+  const requesterAcountObj = getAccountObj( verifyAccountID(inputId), verifyAccountPassword(inputId, password), requesterId );
+  console.log('requesterAcountObj',requesterAcountObj);
+  requesterAcountObj.balance = requesterAcountObj.balance + requestedAmount; // transfer fund 
+  overwriteUserAccount(requesterId, requesterAcountObj);
+
+  // subtract the amount from the account balance
+  accountObj.balance = accountObj.balance - requestedAmount;
+  // remove the request once paid
+  accountObj.fund_requests.splice(fundRequestOption, 1); // remove the request
+  overwriteUserAccount(inputId, accountObj); 
+  saveToDb(databaseFile, all_users);
+  console.log(`\nYour account balance is now ${accountObj.balance}\n`);
+  /* 
+  Transferring 2e to account ID 90570.
+  Your account balance is now 260e.
+  Remember to update the `fund_requests` array and balance of the both accounts.
+ */
+};
+
 /*
-### H3.11 Fund requests
-
-The `request_funds` command lists the fund requests for your account.
-
-Listing fund requests!
-What is your account ID?
-    > 2035
-Account found! Insert your password.
-    > hunter12.
-Correct password. We validated you as Rene Orosz.
-Listing all the requests for your account!
- - 420e for the user 69420.
- - 69e for the user 69420.
- - 2.60e for the user 90570.
-
-		*/
-		
-		
-		/*
 ### H3.12 Accept fund request
 
-The `accept_fund_request` command is somewhat self-explanatory and expands the previous command.
-
-Accepting fund requests!
-What is your account ID?
-    > 2035
-Account found! Insert your password.
-    > hunter12.
-Correct password. We validated you as Rene Orosz.
 Listing all the requests for your account!
 1.   420e for the user 69420.
 2.    69e for the user 69420.
@@ -382,9 +417,16 @@ while(answer !== "quit") {
     case "request_funds":
       request_funds();
       break;  
+    case "fund_requests":
+      fund_requests();
+      break; 
+    case "accept_fund_request":
+      accept_fund_request();
+      break; 
+
 
 		default:
-      request_funds();
+      accept_fund_request();
 			//console.log("Error: Input was not found");
 	}
 }

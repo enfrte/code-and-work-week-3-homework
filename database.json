@@ -1,1 +1,1 @@
-[{"id":123,"name":"Leon Ford","balance":1,"password":"qwerty","fund_requests":[]},{"id":1585667793031,"name":"Tarja Ford","balance":"20010","password":"qwerty","fund_requests":[{"requesteeId":321,"requesterId":123,"requestedAmount":10}]}]
+[{"id":1,"name":"Leon Ford","balance":110,"password":"q","fund_requests":[]},{"id":2,"name":"Tarja Ford","balance":1990,"password":"q","fund_requests":[]}]

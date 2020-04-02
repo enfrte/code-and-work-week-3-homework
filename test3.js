@@ -14,3 +14,5 @@ const arr = [{id: 1},{id: 2}];
 const newArr = {id: 123};
 arr[0] = newArr;
 arr;
+const m = arr.map((val) => console.log(val.id + 1))
+arr;

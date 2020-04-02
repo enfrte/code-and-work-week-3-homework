@@ -1,0 +1,1 @@
+[{"id":1,"name":"Leon Ford","balance":100,"password":"q","fund_requests":[]},{"id":2,"name":"Tarja Ford","balance":2000,"password":"q","fund_requests":[{"requesteeId":2,"requesterId":1,"requestedAmount":10}]}]
