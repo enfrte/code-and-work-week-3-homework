@@ -45,7 +45,7 @@ const does_account_exist = () => {
 	}
   console.log("\nThis account exists.\n");
 }
-		
+
 /*
 ### H3.5 Account balance
 
@@ -66,16 +66,46 @@ Correct password. We validated you as Rene Orosz.
 Your account balance is 12e.
 */
 
-const verifyAccountID = (number) => {
+const account_balance = () => {
+  let inputId = readline.question(`\nChecking your account balance!\nWhat is your account ID?\n`);
+  verifyAccountID(inputId);
+
+	while (verifyAccountID(inputId) === false) {
+		inputId = readline.question("\nAn account with that ID does not exist. Try again.\n");
+    verifyAccountID(inputId);
+  }
+  
+  let password = readline.question("\nAccount found! Insert your password.\n");
+  verifyAccountPassword(inputId, password);
+
+	while (verifyAccountPassword(inputId, password) === false) {
+		password = readline.question("\nWrong password, try typing it again.\n");
+    verifyAccountPassword(inputId, password);
+	}
+  
+  // user has verified id and password
+  const userAccountObj = all_users.filter( (value) => { return value.id === parseInt(inputId) } );
+  return `\nCorrent password\nYour account balance is ${userAccountObj[0].balance}\n`;
+};
+
+const verifyAccountID = (accountNumberString) => {
+  const accountNumber = parseInt(accountNumberString); // this value comes from text input and is therefore a string
 	const allUsersIds = all_users.map( (value) => {
     return value.id;
 	});
 
-	let verifyAccount = allUsersIds.includes(parseInt(number));
-
+	let verifyAccount = allUsersIds.includes(parseInt(accountNumber));
 	return (verifyAccount === true) ? true : false;
 }
-    // make func verifyPassword => arguments(accountId) => return true
+
+const verifyAccountPassword = (accountNumberString, passwordAttempt) => {
+  const accountNumber = parseInt(accountNumberString); // this value comes from text input and is therefore a string
+	if ( verifyAccountID(accountNumber) ) {
+    const userAccountObj = all_users.filter( (value) => { return value.id === accountNumber });
+		return (userAccountObj[0].password === passwordAttempt) ? true : false;
+  }
+} 
+
 		
 		/*
 ### H3.6 Change name
@@ -300,6 +330,11 @@ while(answer !== "quit") {
     case "does_account_exist":
       does_account_exist();
       break;
+    case "account_balance":
+      console.log( account_balance() );
+      break;
+  
+    
 		default:
 			console.log("Error: Input was not found");
 	}
