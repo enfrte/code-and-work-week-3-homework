@@ -8,10 +8,12 @@ const {stringLowerCase, generateId, loadDb, saveToDb, helpText} = require('./ban
 const createAccount = () => {
 	let name = readline.question("\nCreating a new user account!\nInsert your name.\n");
 	name = name.trim();
-	let openingAmount = readline.question(`\nHello, ${name}! It's great to have you as a client.\nHow much is your initial deposit? (The minimum is 10e)\n`);
+  let openingAmount = readline.question(`\nHello, ${name}! It's great to have you as a client.\nHow much is your initial deposit? (The minimum is 10e)\n`);
+  openingAmount = parseInt(openingAmount);
 	if (openingAmount < 10) {
 		while (openingAmount < 10) {
-			openingAmount = readline.question("\nUnfortunately we can't open an account for such a small account. Do you have any more cash with you?\n");
+      openingAmount = readline.question("\nUnfortunately we can't open an account for such a small account. Do you have any more cash with you?\n");
+      openingAmount = parseInt(openingAmount);
 		}
 	}
 	let password = readline.question(`\nGreat, ${name}! You now have an account with a balance of 12e.\nWe're happy to have you as a customer, and we want to ensure that your money is safe with us.\nGive us a password, which gives only you the access to your account.\n`);
@@ -119,8 +121,8 @@ const getAccountObj = (validateAccountId, validateAccountPassword, accountNumber
   console.log("Error: getAccountObj didn't validate");
 };
 
-const askForId = () => {
-  let inputId = readline.question(`\nWhat is your account ID?\n`);
+const askForId = (message = "\nWhat is your account ID?\n") => {
+  let inputId = readline.question(message);
   verifyAccountID(inputId);
 
 	while (verifyAccountID(inputId) === false) {
@@ -151,88 +153,106 @@ const withdraw_funds = () => {
   const password = askForPassword(inputId);
   const accountObj = getAccountObj( verifyAccountID(inputId), verifyAccountPassword(inputId, password), inputId );
   console.log(`\nWe validated you as ${accountObj.name}\n`);
-  let moneyToWithdraw = readline.question(`How much money do you want to withdraw? (Current balance: ${accountObj.balance}e)`);
+  let moneyToWithdraw = readline.question(`\nHow much money do you want to withdraw? (Current balance: ${accountObj.balance}e)\n`);
   moneyToWithdraw = parseInt(moneyToWithdraw);
   while (moneyToWithdraw > accountObj.balance) {
-    moneyToWithdraw = readline.question(`Unfortunately you don't have the balance for that. Try a smaller amount.`);
+    moneyToWithdraw = readline.question(`\nUnfortunately you don't have the balance for that. Try a smaller amount.\n`);
     moneyToWithdraw = parseInt(moneyToWithdraw);
   }
 
-  console.log(`Withdrawing a cash sum of ${moneyToWithdraw}e.`);
+  console.log(`\nWithdrawing a cash sum of ${moneyToWithdraw}e.\n`);
   accountObj.balance = accountObj.balance - moneyToWithdraw;
 
   overwriteUserAccount(inputId, accountObj);
   saveToDb(databaseFile, all_users);
 
-  console.log(`Your account balance is now ${accountObj.balance}e.`);
+  console.log(`\nYour account balance is now ${accountObj.balance}e.\n`);
 };
-		
+
+const deposit_funds = () => {
+  console.log(`\nDepositing cash!\n`);
+
+  const inputId = askForId();
+  console.log(`\nAccount found!\n`);
+
+  const password = askForPassword(inputId);
+  const accountObj = getAccountObj( verifyAccountID(inputId), verifyAccountPassword(inputId, password), inputId );
+  console.log(`\nWe validated you as ${accountObj.name}\n`);
+  let moneyToDeposit = readline.question(`\nHow much money do you want to deposit? (Current balance: ${accountObj.balance}e)\n`);
+  moneyToDeposit = parseInt(moneyToDeposit);
+
+  console.log(`\nDepositing a cash sum of ${moneyToDeposit}e.\n`);
+  accountObj.balance = accountObj.balance + moneyToDeposit;
+
+  overwriteUserAccount(inputId, accountObj);
+  saveToDb(databaseFile, all_users);
+
+  console.log(`\nYour account balance is now ${accountObj.balance}e.\n`);
+};
+
+const transfer_funds = () => {
+  console.log(`\nTransferring funds!\n`);
+
+  const hostAccountId = askForId();
+  console.log(`\nAccount found!\n`);
+
+  const password = askForPassword(hostAccountId);
+  const hostAcountObj = getAccountObj( verifyAccountID(hostAccountId), verifyAccountPassword(hostAccountId, password), hostAccountId );
+  console.log(`\nWe validated you as ${hostAcountObj.name}\n`);
+  let moneyToTransfer = readline.question(`\nHow much money do you want to transfer? (Current balance: ${hostAcountObj.balance}e)\n`);
+  moneyToTransfer = parseInt(moneyToTransfer);
+
+  while (moneyToTransfer > hostAcountObj.balance) {
+    moneyToTransfer = readline.question(`\nUnfortunately you don't have the balance for that. Try a smaller amount.\n`);
+    moneyToTransfer = parseInt(moneyToTransfer);
+  }
+
+  const transferAccountId = askForId("\nWhich account ID do you want to transfer these funds to?\n");
+  const transferAcountObj = getAccountObj( verifyAccountID(transferAccountId), verifyAccountPassword(hostAccountId, password), transferAccountId );
+
+  hostAcountObj.balance = hostAcountObj.balance - moneyToTransfer; // withdraw from host
+  transferAcountObj.balance = transferAcountObj.balance + moneyToTransfer; // withdraw from host
+
+  console.log(`\nSending ${moneyToTransfer}e from account ID ${hostAccountId} to account ID ${transferAccountId}.\n`);
+
+  overwriteUserAccount(hostAccountId, hostAcountObj);
+  overwriteUserAccount(transferAccountId, transferAcountObj);
+  saveToDb(databaseFile, all_users);
+
+  console.log(`\nYour account balance is now ${hostAcountObj.balance}e.\n`);
+};
+
+const request_funds = () => {
+  console.log(`\nRequesting funds!\n`);
+
+  const requesterAccountId = askForId();
+  console.log(`\nAccount found!\n`);
+
+  const password = askForPassword(requesterAccountId);
+  const hostAcountObj = getAccountObj( verifyAccountID(requesterAccountId), verifyAccountPassword(requesterAccountId, password), requesterAccountId );
+  console.log(`\nWe validated you as ${hostAcountObj.name}\n`);
+  
+  // Request funds
+  const requesteeAccountId = askForId("\nWhich account ID do you request funds from?\n");
+
+  let moneyToRequest = readline.question(`\nAccount Found\nHow much money do you want to request?\n`);
+  moneyToRequest = parseInt(moneyToRequest);
+
+  const requesteeAcountObj = getAccountObj( verifyAccountID(requesterAccountId), verifyAccountPassword(requesterAccountId, password), requesteeAccountId );
+
+  const fundRequests = {
+    requesteeId: requesteeAccountId,
+    requesterId: requesterAccountId, 
+    requestedAmount: moneyToRequest
+  }
+
+  requesteeAcountObj.fund_requests.push(fundRequests);
+  overwriteUserAccount(requesteeAccountId, requesteeAcountObj);
+  saveToDb(databaseFile, all_users);
+
+  console.log(`\nRequested ${moneyToRequest}e from the user with ID ${requesteeAccountId}.\n`);
+};
 /*
-### H3.8 Deposit funds
-
-The `deposit_funds` command starts a dialog sequence as well, very similarly to `withdraw_funds`.
-
-Depositing cash!
-What is your account ID?
-    > 2035
-Account found! Insert your password.
-    > hunter12.
-Correct password. We validated you as Rene Orozzz.
-How much money do you want to deposit? (Current balance: 12e)    
-    > 250
-Depositing 250e. Your account balance is now 262e.
-
-		*/
-		
-		
-		/*
-### H3.9 Transfer funds
-
-The `transfer_funds` command starts a dialog sequence as well.
-
-Transferring funds!
-What is your account ID?
-    > 2035
-Account found! Insert your password.
-    > hunter12.
-Correct password. We validated you as Rene Orosz.
-How much money do you want to transfer? (Current balance: 262e)
-    > 200
-Which account ID do you want to transfer these funds to?
-    > 666
-An account with that ID does not exist. Try again.
-    > 90570
-    > Sending 11e from account ID 2035 to account ID 90570.
-
-		*/
-		
-		
-		/*
-## Requests
-### H3.10 Request funds
-
-The `request_funds` command starts a dialog sequence as well.
-
-Requesting funds!
-What is your account ID?
-    > 2035
-Account found! Insert your password.
-    > hunter12.
-Correct password. We validated you as Rene Orosz.
-Which account ID do you request funds from?
-    > 69420
-An account with that ID does not exist. Try again.
-    > 90570
-Account found. How much money do you want to request?
-    > 500
-Requesting 500e from the user with ID 90570.
-
-All the fund requests should be stored in a `fund_requests` array. It should contain the IDs of the requestee and the requester, and the requested amount.
-
-*/
-		
-		
-		/*
 ### H3.11 Fund requests
 
 The `request_funds` command lists the fund requests for your account.
@@ -353,10 +373,18 @@ while(answer !== "quit") {
     case "withdraw_funds":
       withdraw_funds();
       break;
-      
-    
+    case "deposit_funds":
+      deposit_funds();
+      break;      
+    case "transfer_funds":
+      transfer_funds();
+      break;
+    case "request_funds":
+      request_funds();
+      break;  
+
 		default:
-      withdraw_funds();
+      request_funds();
 			//console.log("Error: Input was not found");
 	}
 }
