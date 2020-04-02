@@ -16,7 +16,7 @@ const createAccount = () => {
       openingAmount = parseInt(openingAmount);
 		}
 	}
-	let password = readline.question(`\nGreat, ${name}! You now have an account with a balance of 12e.\nWe're happy to have you as a customer, and we want to ensure that your money is safe with us.\nGive us a password, which gives only you the access to your account.\n`);
+	let password = readline.question(`\nGreat, ${name}! You now have an account with a balance of ${openingAmount}e.\nWe're happy to have you as a customer, and we want to ensure that your money is safe with us.\nGive us a password, which gives only you the access to your account.\n`);
 	password = password.trim();
 	const id = generateId();
 	
@@ -27,7 +27,8 @@ const createAccount = () => {
 		password: password,
 		fund_requests: []
 	};
-	return account;
+  
+  saveNewAccount(account);
 }
 
 const saveNewAccount = (accountDetails) => {
@@ -269,6 +270,7 @@ const fund_requests = () => {
 };
     
 const accept_fund_request = () => {
+  if ( confirmationRequest() ) return;
   //Accepting fund requests!
   console.log(`\nAccepting fund request!\n`);
 
@@ -307,76 +309,37 @@ const accept_fund_request = () => {
   overwriteUserAccount(inputId, accountObj); 
   saveToDb(databaseFile, all_users);
   console.log(`\nYour account balance is now ${accountObj.balance}\n`);
-  /* 
-  Transferring 2e to account ID 90570.
-  Your account balance is now 260e.
-  Remember to update the `fund_requests` array and balance of the both accounts.
- */
+};
+// Implement a yes/no question, and add it as a confirmation to important actions, e.g. for accepting the fund request.
+const confirmationRequest = () => {
+  const confirm = readline.question(`\nAre you sure? (yes/no)\n`);
+  if (stringLowerCase(confirm) === "no" || stringLowerCase(confirm) === "n" ) {
+    console.log("Terminating current action.");
+    return true;    
+  }
 };
 
-/*
-### H3.12 Accept fund request
+/* 
+  ### H3.14 Log in
+  
+  Implement a `log_in` command that asks for a username and a password. 
+  Store the logged in user ID in a `logged_user` variable. 
+  After logging in, other commands should validate the user automatically, 
+  and the log_in command is unavailable; 
+  instead, there should be a `log_out` command available.
 
-Listing all the requests for your account!
-1.   420e for the user 69420.
-2.    69e for the user 69420.
-3.     2e for the user 90570.
-Your account balance is 262e. Which fund request would you like to accept?
-    > 1
-You do not have funds to accept this request.
-    > 3
-Accepting fund request 2e for the user 90570. 
-Transferring 2e to account ID 90570.
-Your account balance is now 260e.
-
-Remember to update the `fund_requests` array and balance of the both accounts.
-
+  Logging in!
+  What is your account ID?
+  > 69420
+  An account with that ID does not exist. Try again.
+  > 2035
+  Account found! Insert your password.
+  > hunetr12
+  Wrong password, try typing it again.
+  > hunter12.
+  Correct password. We validated you as Rene Orosz.
+  You are now logged in.
 */
-		
-		
-		/*
-
-## Extra
-
-### H3.13 Yes or no
-Implement a yes/no question, and add it as a confirmation to important actions, e.g. for accepting the fund request.
-
-Are you sure?
-    > no
-Terminating current action.
-
-Are you sure?
-    > yes
-    
-    */
-		
-		
-		/*
-### H3.14 Log in
-
-Implement a `log_in` command that asks for a username and a password. Store the logged in user ID in a `logged_user` variable. After logging in, other commands should validate the user automatically, and the log_in command is unavailable; instead, there should be a `log_out` command available.
-
-Logging in!
-What is your account ID?
-    > 69420
-An account with that ID does not exist. Try again.
-    > 2035
-Account found! Insert your password.
-    > hunetr12
-Wrong password, try typing it again.
-    > hunter12.
-Correct password. We validated you as Rene Orosz.
-You are now logged in.
-    */
-		
-		
-		/*
-### H3.15 Store the data in JSON
-
-Store the user data in a JSON file which gets loaded when the program starts.
-*/
-
-
 
 const databaseFile = 'database.json';
 const all_users = loadDb(databaseFile);
@@ -394,7 +357,7 @@ while(answer !== "quit") {
 			console.log("\nGoodbye!\n");
 			break;
 		case "create_account":
-			saveNewAccount(createAccount());
+			createAccount();
       break;
     case "does_account_exist":
       does_account_exist();
@@ -423,10 +386,7 @@ while(answer !== "quit") {
     case "accept_fund_request":
       accept_fund_request();
       break; 
-
-
 		default:
-      accept_fund_request();
-			//console.log("Error: Input was not found");
+			console.log("Error: Input was not found");
 	}
 }
