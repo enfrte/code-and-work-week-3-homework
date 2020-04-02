@@ -46,26 +46,6 @@ const does_account_exist = () => {
   console.log("\nThis account exists.\n");
 }
 
-/*
-### H3.5 Account balance
-
-The `account_balance` command starts a dialog sequence as well. 
-User is asked for an account ID and a password. 
-Given a correct ID-password pair, the account balance is printed.
-
-Checking your account balance!
-What is your account ID?
-    > 69420
-An account with that ID does not exist. Try again.
-    > 2035
-Account found! Insert your password.
-    > hunetr12
-Wrong password, try typing it again.
-    > hunter12.
-Correct password. We validated you as Rene Orosz.
-Your account balance is 12e.
-*/
-
 const account_balance = () => {
   let inputId = readline.question(`\nChecking your account balance!\nWhat is your account ID?\n`);
   verifyAccountID(inputId);
@@ -85,7 +65,7 @@ const account_balance = () => {
   
   // user has verified id and password
   const userAccountObj = all_users.filter( (value) => { return value.id === parseInt(inputId) } );
-  return `\nCorrent password\nYour account balance is ${userAccountObj[0].balance}\n`;
+  return `\nCorrent password\nYour account balance is ${userAccountObj[0].balance}e\n`;
 };
 
 const verifyAccountID = (accountNumberString) => {
@@ -106,24 +86,51 @@ const verifyAccountPassword = (accountNumberString, passwordAttempt) => {
   }
 } 
 
-		
-		/*
+const change_name = () => {
+  let inputId = readline.question(`\Changing the name associated with your account!\nWhat is your account ID?\n`);
+  verifyAccountID(inputId);
+
+	while (verifyAccountID(inputId) === false) {
+		inputId = readline.question("\nAn account with that ID does not exist. Try again.\n");
+    verifyAccountID(inputId);
+  }
+  
+  let password = readline.question("\nAccount found! Insert your password.\n");
+  verifyAccountPassword(inputId, password);
+
+	while (verifyAccountPassword(inputId, password) === false) {
+		password = readline.question("\nWrong password, try typing it again.\n");
+    verifyAccountPassword(inputId, password);
+  }
+  
+  const accountObj = getAccountObj( verifyAccountID(inputId), verifyAccountPassword(inputId, password), inputId );
+  console.log( `\nCorrect password. We validated you as ${accountObj.name}\nBut it appears you want to change your name.\n`);
+  let newName = readline.question("Which name should we change your name to?\n");
+  accountObj.name = newName;
+  overwriteUserAccount(inputId, accountObj);
+  saveToDb(databaseFile, all_users);
+};
+
+const overwriteUserAccount = (accountNumberString, accountObj) => {
+  const accountNumber = parseInt(accountNumberString); // this value comes from text input and is therefore a string
+  const accountIndex = all_users.findIndex(obj => obj.id === accountNumber); // object located in index of all_users
+  all_users[accountIndex] = accountObj; // overwrites at specified index
+};
+
+/*
 ### H3.6 Change name
-
-The `change_name` command starts a dialog sequence as well. You get the drill.
-
-    $ Changing the name associated with your account!
-    $ What is your account ID?
-    > 2035
-    $ Account found! Insert your password.
-    > hunter12.
-    $ Correct password. We validated you as Rene Orosz.
-    $ But it appears you want to change your name.
-    $ Which name should we change your name to?
-    > Rene Orozzz
-    $ We will address you as Rene Orozzz from now on.
-
-		*/
+We will address you as Rene Orozzz from now on.
+*/
+const getAccountObj = (validateAccountId, validateAccountPassword, accountNumberString) => {
+  const accountNumber = parseInt(accountNumberString); // this value comes from text input and is therefore a string
+  if ((validateAccountId && validateAccountPassword) === true) {
+    console.log('validated');
+    const userAccountObjArray = all_users.filter( (value) => { return value.id === accountNumber } );
+    const userAccountObj = userAccountObjArray[0];
+    return userAccountObj;
+  }
+  console.log("Error: getAccountObj didn't validate");
+};
 		
 		
 		/*
@@ -132,21 +139,21 @@ The `change_name` command starts a dialog sequence as well. You get the drill.
 
 The `withdraw_funds` command starts a dialog sequence as well. Reuse elements from H2.5.4 and H2.5.6 for checking if an account exists and logging in.
 
-    $ Withdrawing cash!
-    $ What is your account ID?
+Withdrawing cash!
+What is your account ID?
     > 69420
-    $ An account with that ID does not exist. Try again.
+An account with that ID does not exist. Try again.
     > 2035
-    $ Account found! Insert your password.
+Account found! Insert your password.
     > hunetr12
-    $ Wrong password, try typing it again.
+Wrong password, try typing it again.
     > hunter12.
-    $ Correct password. We validated you as Rene Orozzz.
-    $ How much money do you want to withdraw? (Current balance: 12e)
+Correct password. We validated you as Rene Orozzz.
+How much money do you want to withdraw? (Current balance: 12e)
     > 13
-    $ Unfortunately you don't have the balance for that. Try a smaller amount.
+Unfortunately you don't have the balance for that. Try a smaller amount.
     > 11
-    $ Withdrawing a cash sum of 11e. Your account balance is now 1e.
+Withdrawing a cash sum of 11e. Your account balance is now 1e.
 
 Find the correct account from the `all_users` array, validate the user and update the account balance. Don't allow the user to exceed their balance in the withdrawal.
 
@@ -158,15 +165,15 @@ Find the correct account from the `all_users` array, validate the user and updat
 
 The `deposit_funds` command starts a dialog sequence as well, very similarly to `withdraw_funds`.
 
-    $ Depositing cash!
-    $ What is your account ID?
+Depositing cash!
+What is your account ID?
     > 2035
-    $ Account found! Insert your password.
+Account found! Insert your password.
     > hunter12.
-    $ Correct password. We validated you as Rene Orozzz.
-    $ How much money do you want to deposit? (Current balance: 12e)    
+Correct password. We validated you as Rene Orozzz.
+How much money do you want to deposit? (Current balance: 12e)    
     > 250
-    $ Depositing 250e. Your account balance is now 262e.
+Depositing 250e. Your account balance is now 262e.
 
 		*/
 		
@@ -176,17 +183,17 @@ The `deposit_funds` command starts a dialog sequence as well, very similarly to 
 
 The `transfer_funds` command starts a dialog sequence as well.
 
-    $ Transferring funds!
-    $ What is your account ID?
+Transferring funds!
+What is your account ID?
     > 2035
-    $ Account found! Insert your password.
+Account found! Insert your password.
     > hunter12.
-    $ Correct password. We validated you as Rene Orosz.
-    $ How much money do you want to transfer? (Current balance: 262e)
+Correct password. We validated you as Rene Orosz.
+How much money do you want to transfer? (Current balance: 262e)
     > 200
-    $ Which account ID do you want to transfer these funds to?
+Which account ID do you want to transfer these funds to?
     > 666
-    $ An account with that ID does not exist. Try again.
+An account with that ID does not exist. Try again.
     > 90570
     > Sending 11e from account ID 2035 to account ID 90570.
 
@@ -199,19 +206,19 @@ The `transfer_funds` command starts a dialog sequence as well.
 
 The `request_funds` command starts a dialog sequence as well.
 
-    $ Requesting funds!
-    $ What is your account ID?
+Requesting funds!
+What is your account ID?
     > 2035
-    $ Account found! Insert your password.
+Account found! Insert your password.
     > hunter12.
-    $ Correct password. We validated you as Rene Orosz.
-    $ Which account ID do you request funds from?
+Correct password. We validated you as Rene Orosz.
+Which account ID do you request funds from?
     > 69420
-    $ An account with that ID does not exist. Try again.
+An account with that ID does not exist. Try again.
     > 90570
-    $ Account found. How much money do you want to request?
+Account found. How much money do you want to request?
     > 500
-    $ Requesting 500e from the user with ID 90570.
+Requesting 500e from the user with ID 90570.
 
 All the fund requests should be stored in a `fund_requests` array. It should contain the IDs of the requestee and the requester, and the requested amount.
 
@@ -223,16 +230,16 @@ All the fund requests should be stored in a `fund_requests` array. It should con
 
 The `request_funds` command lists the fund requests for your account.
 
-    $ Listing fund requests!
-    $ What is your account ID?
+Listing fund requests!
+What is your account ID?
     > 2035
-    $ Account found! Insert your password.
+Account found! Insert your password.
     > hunter12.
-    $ Correct password. We validated you as Rene Orosz.
-    $ Listing all the requests for your account!
-    $  - 420e for the user 69420.
-    $  - 69e for the user 69420.
-    $  - 2.60e for the user 90570.
+Correct password. We validated you as Rene Orosz.
+Listing all the requests for your account!
+ - 420e for the user 69420.
+ - 69e for the user 69420.
+ - 2.60e for the user 90570.
 
 		*/
 		
@@ -242,23 +249,23 @@ The `request_funds` command lists the fund requests for your account.
 
 The `accept_fund_request` command is somewhat self-explanatory and expands the previous command.
 
-    $ Accepting fund requests!
-    $ What is your account ID?
+Accepting fund requests!
+What is your account ID?
     > 2035
-    $ Account found! Insert your password.
+Account found! Insert your password.
     > hunter12.
-    $ Correct password. We validated you as Rene Orosz.
-    $ Listing all the requests for your account!
-    $ 1.   420e for the user 69420.
-    $ 2.    69e for the user 69420.
-    $ 3.     2e for the user 90570.
-    $ Your account balance is 262e. Which fund request would you like to accept?
+Correct password. We validated you as Rene Orosz.
+Listing all the requests for your account!
+1.   420e for the user 69420.
+2.    69e for the user 69420.
+3.     2e for the user 90570.
+Your account balance is 262e. Which fund request would you like to accept?
     > 1
-    $ You do not have funds to accept this request.
+You do not have funds to accept this request.
     > 3
-    $ Accepting fund request 2e for the user 90570. 
-    $ Transferring 2e to account ID 90570.
-    $ Your account balance is now 260e.
+Accepting fund request 2e for the user 90570. 
+Transferring 2e to account ID 90570.
+Your account balance is now 260e.
 
 Remember to update the `fund_requests` array and balance of the both accounts.
 
@@ -272,11 +279,11 @@ Remember to update the `fund_requests` array and balance of the both accounts.
 ### H3.13 Yes or no
 Implement a yes/no question, and add it as a confirmation to important actions, e.g. for accepting the fund request.
 
-    $ Are you sure?
+Are you sure?
     > no
-    $ Terminating current action.
+Terminating current action.
 
-    $ Are you sure?
+Are you sure?
     > yes
     
     */
@@ -287,17 +294,17 @@ Implement a yes/no question, and add it as a confirmation to important actions, 
 
 Implement a `log_in` command that asks for a username and a password. Store the logged in user ID in a `logged_user` variable. After logging in, other commands should validate the user automatically, and the log_in command is unavailable; instead, there should be a `log_out` command available.
 
-    $ Logging in!
-    $ What is your account ID?
+Logging in!
+What is your account ID?
     > 69420
-    $ An account with that ID does not exist. Try again.
+An account with that ID does not exist. Try again.
     > 2035
-    $ Account found! Insert your password.
+Account found! Insert your password.
     > hunetr12
-    $ Wrong password, try typing it again.
+Wrong password, try typing it again.
     > hunter12.
-    $ Correct password. We validated you as Rene Orosz.
-    $ You are now logged in.
+Correct password. We validated you as Rene Orosz.
+You are now logged in.
     */
 		
 		
@@ -333,9 +340,13 @@ while(answer !== "quit") {
     case "account_balance":
       console.log( account_balance() );
       break;
-  
+    case "change_name":
+      change_name();
+      break;
+      
     
 		default:
-			console.log("Error: Input was not found");
+      change_name();
+			//console.log("Error: Input was not found");
 	}
 }
